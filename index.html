@@ -55,6 +55,7 @@
             </label>
 
             <div class="quick-amounts" aria-label="Quick amounts">
+              <button type="button" data-amount="0.25">$0.25</button>
               <button type="button" data-amount="1">$1</button>
               <button type="button" data-amount="2">$2</button>
               <button type="button" data-amount="5">$5</button>
@@ -126,6 +127,21 @@
         </div>
       </section>
     </main>
+
+    <dialog id="resetDialog" class="confirm-dialog" aria-labelledby="resetTitle">
+      <form id="resetForm" class="confirm-card" method="dialog">
+        <h2 id="resetTitle">Reset all sales?</h2>
+        <p>This deletes every sale saved in this browser.</p>
+        <label class="confirm-field">
+          <span>Type RESET to confirm</span>
+          <input id="resetConfirmInput" autocomplete="off" autocapitalize="characters" spellcheck="false">
+        </label>
+        <div class="confirm-actions">
+          <button id="resetCancelButton" class="text-button" type="button">Cancel</button>
+          <button id="resetConfirmButton" class="text-button danger" type="submit" disabled>Reset sales</button>
+        </div>
+      </form>
+    </dialog>
 
     <script src="app.js"></script>
   </body>

@@ -20,6 +20,11 @@
     reportRows: document.querySelector("#reportRows"),
     reportSales: document.querySelector("#reportSales"),
     clearAll: document.querySelector("#clearAllButton"),
+    resetDialog: document.querySelector("#resetDialog"),
+    resetForm: document.querySelector("#resetForm"),
+    resetConfirmInput: document.querySelector("#resetConfirmInput"),
+    resetConfirmButton: document.querySelector("#resetConfirmButton"),
+    resetCancelButton: document.querySelector("#resetCancelButton"),
     exportButton: document.querySelector("#exportButton"),
     totals: {
       A: document.querySelector("#totalA"),
@@ -54,8 +59,7 @@
 
     document.querySelectorAll("[data-amount]").forEach((button) => {
       button.addEventListener("click", () => {
-        elements.amount.value = button.dataset.amount;
-        elements.amount.focus();
+        addQuickAmount(Number.parseFloat(button.dataset.amount));
       });
     });
 
@@ -64,6 +68,9 @@
     elements.reportSales.addEventListener("click", handleReportSaleClick);
     elements.reportSales.addEventListener("submit", saveReportSaleEdit);
     elements.clearAll.addEventListener("click", clearAllSales);
+    elements.resetForm.addEventListener("submit", confirmResetSales);
+    elements.resetCancelButton.addEventListener("click", closeResetDialog);
+    elements.resetConfirmInput.addEventListener("input", updateResetConfirmation);
     elements.exportButton.addEventListener("click", exportCsv);
 
     render();
@@ -116,9 +123,19 @@
 
     saveSales();
     elements.amount.value = "";
-    elements.amount.focus();
+    elements.amount.blur();
     setStatus(`${state.selectedBucket} ${formatMoney(amount)} saved`, false);
     render();
+  }
+
+  function addQuickAmount(amount) {
+    if (!Number.isFinite(amount)) {
+      return;
+    }
+
+    const currentAmount = Number.parseFloat(elements.amount.value) || 0;
+    elements.amount.value = (Math.round((currentAmount + amount) * 100) / 100).toString();
+    elements.amount.focus();
   }
 
   function deleteSale(event) {
@@ -190,12 +207,50 @@
       return;
     }
 
-    const confirmed = window.confirm("Reset all recorded sales on this device?");
-    if (!confirmed) {
+    elements.resetConfirmInput.value = "";
+    elements.resetConfirmButton.disabled = true;
+
+    if (typeof elements.resetDialog.showModal !== "function") {
+      const typedValue = window.prompt('Type "RESET" to delete every sale saved in this browser.');
+      if (typedValue !== "RESET") {
+        setStatus("Reset canceled", true);
+        return;
+      }
+
+      resetSales();
       return;
     }
 
+    elements.resetDialog.showModal();
+    elements.resetConfirmInput.focus();
+  }
+
+  function updateResetConfirmation() {
+    elements.resetConfirmButton.disabled = elements.resetConfirmInput.value.trim() !== "RESET";
+  }
+
+  function closeResetDialog() {
+    elements.resetDialog.close();
+    elements.resetConfirmInput.value = "";
+    elements.resetConfirmButton.disabled = true;
+  }
+
+  function confirmResetSales(event) {
+    event.preventDefault();
+
+    if (elements.resetConfirmInput.value.trim() !== "RESET") {
+      setStatus("Type RESET to confirm", true);
+      elements.resetConfirmInput.focus();
+      return;
+    }
+
+    closeResetDialog();
+    resetSales();
+  }
+
+  function resetSales() {
     state.sales = [];
+    state.editingSaleId = null;
     saveSales();
     setStatus("All sales reset", false);
     render();

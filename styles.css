@@ -40,6 +40,10 @@ input {
   font: inherit;
 }
 
+body:has(dialog[open]) {
+  overflow: hidden;
+}
+
 button {
   cursor: pointer;
 }
@@ -616,6 +620,79 @@ h2 {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 8px;
+}
+
+.confirm-dialog {
+  width: min(calc(100% - 28px), 420px);
+  padding: 0;
+  color: var(--ink);
+  background: transparent;
+  border: 0;
+}
+
+.confirm-dialog::backdrop {
+  background: rgba(31, 35, 40, 0.54);
+}
+
+.confirm-card {
+  display: grid;
+  gap: 14px;
+  padding: 18px;
+  background: var(--surface);
+  border: 1px solid rgba(31, 35, 40, 0.12);
+  border-radius: 8px;
+  box-shadow: 0 24px 80px rgba(31, 35, 40, 0.34);
+}
+
+.confirm-card p {
+  margin: 0;
+  color: var(--muted);
+  font-weight: 700;
+  line-height: 1.4;
+}
+
+.confirm-field {
+  display: grid;
+  gap: 7px;
+}
+
+.confirm-field span {
+  color: var(--muted);
+  font-size: 0.78rem;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.confirm-field input {
+  min-height: 52px;
+  padding: 0 12px;
+  color: var(--ink);
+  font-size: 1.25rem;
+  font-weight: 900;
+  letter-spacing: 0;
+  background: #fbfaf7;
+  border: 2px solid var(--line);
+  border-radius: 8px;
+}
+
+.confirm-field input:focus {
+  border-color: #1f2328;
+  outline: 3px solid rgba(31, 35, 40, 0.1);
+}
+
+.confirm-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.confirm-actions .text-button {
+  min-height: 46px;
+}
+
+.text-button:disabled {
+  cursor: not-allowed;
+  opacity: 0.45;
 }
 
 @media (min-width: 680px) {
