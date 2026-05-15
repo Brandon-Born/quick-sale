@@ -1,0 +1,132 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <meta name="theme-color" content="#f7f4ee">
+    <title>Garage Sale Recorder</title>
+    <link rel="stylesheet" href="styles.css">
+  </head>
+  <body>
+    <main class="app-shell">
+      <header class="topbar">
+        <div>
+          <p class="eyebrow">Garage Sale</p>
+          <h1>Sales Recorder</h1>
+        </div>
+        <div class="today-total" aria-live="polite">
+          <span>Today</span>
+          <strong id="todayTotal">$0.00</strong>
+        </div>
+      </header>
+
+      <nav class="tabs" aria-label="Views">
+        <button class="tab is-active" type="button" data-view-tab="intake">Intake</button>
+        <button class="tab" type="button" data-view-tab="report">Report</button>
+      </nav>
+
+      <section id="intakeView" class="view is-active" aria-labelledby="intakeTitle">
+        <div class="panel intake-panel">
+          <div class="section-heading">
+            <h2 id="intakeTitle">Record Sale</h2>
+            <output id="statusMessage" class="status-message" aria-live="polite"></output>
+          </div>
+
+          <fieldset class="bucket-picker">
+            <legend>Bucket</legend>
+            <button class="bucket-card bucket-a is-selected" type="button" data-bucket="A" aria-pressed="true">
+              <span>A</span>
+            </button>
+            <button class="bucket-card bucket-t" type="button" data-bucket="T" aria-pressed="false">
+              <span>T</span>
+            </button>
+            <button class="bucket-card bucket-z" type="button" data-bucket="Z" aria-pressed="false">
+              <span>Z</span>
+            </button>
+          </fieldset>
+
+          <form id="saleForm" class="sale-form" autocomplete="off">
+            <label class="field">
+              <span>Amount</span>
+              <div class="money-input">
+                <span aria-hidden="true">$</span>
+                <input id="saleAmount" name="amount" inputmode="decimal" type="number" min="0" step="0.01" placeholder="0.00" required>
+              </div>
+            </label>
+
+            <div class="quick-amounts" aria-label="Quick amounts">
+              <button type="button" data-amount="1">$1</button>
+              <button type="button" data-amount="2">$2</button>
+              <button type="button" data-amount="5">$5</button>
+              <button type="button" data-amount="10">$10</button>
+              <button type="button" data-amount="20">$20</button>
+            </div>
+
+            <button class="record-button" type="submit">Record Sale</button>
+          </form>
+        </div>
+
+        <div class="panel">
+          <div class="section-heading">
+            <h2>Recent Sales</h2>
+            <button id="clearAllButton" class="text-button danger" type="button">Reset</button>
+          </div>
+          <ol id="recentSales" class="recent-sales"></ol>
+        </div>
+      </section>
+
+      <section id="reportView" class="view" aria-labelledby="reportTitle">
+        <div class="panel">
+          <div class="section-heading">
+            <h2 id="reportTitle">Daily Report</h2>
+            <div class="report-actions">
+              <output id="reportStatus" class="status-message" aria-live="polite"></output>
+              <button id="exportButton" class="text-button" type="button">CSV</button>
+            </div>
+          </div>
+
+          <div class="summary-grid" aria-label="All sales totals">
+            <div class="summary-tile tile-a">
+              <span>A</span>
+              <strong id="totalA">$0.00</strong>
+            </div>
+            <div class="summary-tile tile-t">
+              <span>T</span>
+              <strong id="totalT">$0.00</strong>
+            </div>
+            <div class="summary-tile tile-z">
+              <span>Z</span>
+              <strong id="totalZ">$0.00</strong>
+            </div>
+            <div class="summary-tile tile-total">
+              <span>Total</span>
+              <strong id="grandTotal">$0.00</strong>
+            </div>
+          </div>
+
+          <div class="report-table-wrap">
+            <table class="report-table">
+              <thead>
+                <tr>
+                  <th scope="col">Day</th>
+                  <th scope="col">A</th>
+                  <th scope="col">T</th>
+                  <th scope="col">Z</th>
+                  <th scope="col">Total</th>
+                </tr>
+              </thead>
+              <tbody id="reportRows"></tbody>
+            </table>
+          </div>
+
+          <div class="report-items-block">
+            <h2>Recorded Sales</h2>
+            <ol id="reportSales" class="report-sales"></ol>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <script src="app.js"></script>
+  </body>
+</html>
