@@ -142,6 +142,17 @@
       </form>
     </dialog>
 
+    <dialog id="deleteDialog" class="confirm-dialog" aria-labelledby="deleteTitle">
+      <form id="deleteForm" class="confirm-card" method="dialog">
+        <h2 id="deleteTitle">Delete sale?</h2>
+        <p id="deleteSummary">This sale will be removed.</p>
+        <div class="confirm-actions">
+          <button id="deleteCancelButton" class="text-button" type="button">Cancel</button>
+          <button id="deleteConfirmButton" class="text-button danger" type="submit">Delete sale</button>
+        </div>
+      </form>
+    </dialog>
+
     <script src="app.js"></script>
   </body>
 </html>

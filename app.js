@@ -7,6 +7,7 @@
   const state = {
     selectedBucket: "A",
     editingSaleId: null,
+    pendingDeleteSaleId: null,
     sales: loadSales(),
   };
 
@@ -25,6 +26,11 @@
     resetConfirmInput: document.querySelector("#resetConfirmInput"),
     resetConfirmButton: document.querySelector("#resetConfirmButton"),
     resetCancelButton: document.querySelector("#resetCancelButton"),
+    deleteDialog: document.querySelector("#deleteDialog"),
+    deleteForm: document.querySelector("#deleteForm"),
+    deleteSummary: document.querySelector("#deleteSummary"),
+    deleteConfirmButton: document.querySelector("#deleteConfirmButton"),
+    deleteCancelButton: document.querySelector("#deleteCancelButton"),
     exportButton: document.querySelector("#exportButton"),
     totals: {
       A: document.querySelector("#totalA"),
@@ -71,6 +77,8 @@
     elements.resetForm.addEventListener("submit", confirmResetSales);
     elements.resetCancelButton.addEventListener("click", closeResetDialog);
     elements.resetConfirmInput.addEventListener("input", updateResetConfirmation);
+    elements.deleteForm.addEventListener("submit", confirmDeleteSale);
+    elements.deleteCancelButton.addEventListener("click", closeDeleteDialog);
     elements.exportButton.addEventListener("click", exportCsv);
 
     render();
@@ -144,10 +152,7 @@
       return;
     }
 
-    state.sales = state.sales.filter((sale) => sale.id !== button.dataset.deleteId);
-    saveSales();
-    setStatus("Sale removed", false);
-    render();
+    requestDeleteSale(button.dataset.deleteId);
   }
 
   function handleReportSaleClick(event) {
@@ -167,14 +172,56 @@
 
     const deleteButton = event.target.closest("[data-report-delete-id]");
     if (deleteButton) {
-      state.sales = state.sales.filter((sale) => sale.id !== deleteButton.dataset.reportDeleteId);
-      if (state.editingSaleId === deleteButton.dataset.reportDeleteId) {
-        state.editingSaleId = null;
-      }
-      saveSales();
-      setStatus("Sale deleted", false);
-      render();
+      requestDeleteSale(deleteButton.dataset.reportDeleteId);
     }
+  }
+
+  function requestDeleteSale(saleId) {
+    const sale = state.sales.find((item) => item.id === saleId);
+    if (!sale) {
+      return;
+    }
+
+    state.pendingDeleteSaleId = saleId;
+    elements.deleteSummary.textContent = `${sale.bucket} ${formatMoney(sale.amount)} from ${formatDay(sale.date)} at ${formatDateTime(sale.createdAt)} will be removed.`;
+
+    if (typeof elements.deleteDialog.showModal !== "function") {
+      if (window.confirm(`Delete ${sale.bucket} sale for ${formatMoney(sale.amount)}?`)) {
+        deleteSaleById(saleId);
+      }
+      return;
+    }
+
+    elements.deleteDialog.showModal();
+    elements.deleteCancelButton.focus();
+  }
+
+  function closeDeleteDialog() {
+    elements.deleteDialog.close();
+    state.pendingDeleteSaleId = null;
+    elements.deleteSummary.textContent = "This sale will be removed.";
+  }
+
+  function confirmDeleteSale(event) {
+    event.preventDefault();
+
+    const saleId = state.pendingDeleteSaleId;
+    closeDeleteDialog();
+
+    if (saleId) {
+      deleteSaleById(saleId);
+    }
+  }
+
+  function deleteSaleById(saleId) {
+    state.sales = state.sales.filter((sale) => sale.id !== saleId);
+    if (state.editingSaleId === saleId) {
+      state.editingSaleId = null;
+    }
+    state.pendingDeleteSaleId = null;
+    saveSales();
+    setStatus("Sale deleted", false);
+    render();
   }
 
   function saveReportSaleEdit(event) {
